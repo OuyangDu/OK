@@ -23,6 +23,8 @@ file_path <- "/Users/karawei/Desktop/GRAD 3rd/ESE 527/garments_worker_productivi
 
 # Use read.csv() to read the CSV file into a data frame
 data_prod <- read.csv(file_path)
+#replacing misplaced 'finishing ' with "finishing
+data_prod$department = replace(data_prod$department, data_prod$department=="finishing ", "finishing")
 head(data_prod)
 nrow(data_prod)
 ```
@@ -36,7 +38,6 @@ par(mfrow = c(3, 4))
 hist(data_prod[["actual_productivity"]],main="Productivity Index",xlab="Productivity Index")
 hist(data_prod[["targeted_productivity"]],main="Target Productivity",xlab="Productivity Index")
 hist(data_prod[["smv"]],main="Standard Minute Value",xlab="Minutes Needed for Task")
-hist(data_prod[["wip"]],main="Work in Progress",xlab="Work in Progress")
 hist(data_prod[["over_time"]],main="Over Time",xlab="Minutes of Over Time")
 hist(data_prod[["wip"]],main="Work in Progress",xlab="Number of Unfinished Products")
 hist(data_prod[["incentive"]],main="Financial Incentive",xlab="Bangladash Taka(BDT)",breaks=200)
@@ -144,13 +145,34 @@ https://www.analyticsvidhya.com/blog/2016/03/tutorial-powerful-packages-imputing
 https://cran.r-project.org/web/packages/mice/readme/README.html
 
 
+## Create pie charts for categorical data to see the distributions:
 
 
+```{r,warning = FALSE}
+counts_of_departments = c(length(data_prod$department[data_prod$department=="sweing"]), length(data_prod$department[data_prod$department=="finishing"]))
+labels_of_departments = c("sweing", "finishing")
+departments_pie_labels <- paste0(labels_of_departments, ", ", round(100 * counts_of_departments/sum(counts_of_departments), 2), "%")
 
+counts_of_quarters = c(length(data_prod$quarter[data_prod$quarter=="Quarter1"]), length(data_prod$quarter[data_prod$quarter=="Quarter2"]),length(data_prod$quarter[data_prod$quarter=="Quarter3"]), length(data_prod$quarter[data_prod$quarter=="Quarter4"]),length(data_prod$quarter[data_prod$quarter=="Quarter5"]))
+labels_of_quarters = c("Quarter1", "Quarter2","Quarter3","Quarter4","Quarter5")
+quarters_pie_labels <- paste0(labels_of_quarters, ", ", round(100 * counts_of_quarters/sum(counts_of_quarters), 2), "%")
 
+counts_of_days = c(length(data_prod$day[data_prod$day=="Monday"]),
+length(data_prod$day[data_prod$day=="Tuesday"]),
+length(data_prod$day[data_prod$day=="Wednesday"]),
+length(data_prod$day[data_prod$day=="Thursday"]),
+length(data_prod$day[data_prod$day=="Friday"]),
+length(data_prod$day[data_prod$day=="Saturday"]),
+length(data_prod$day[data_prod$day=="Sunday"]))
+labels_of_days = c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
+days_pie_labels <- paste0(labels_of_days, ", ", round(100 * counts_of_days/sum(counts_of_days), 2), "%")
+```
 
-
-
+```{r}
+pie(counts_of_departments, labels = departments_pie_labels,main = "Pie Chart of Departments",col = rainbow(length(counts_of_departments)))
+pie(counts_of_quarters, labels = quarters_pie_labels,main = "Pie Chart of Quarters",col = rainbow(length(counts_of_quarters)))
+pie(counts_of_days, labels = days_pie_labels,main = "Pie Chart of Days",col = rainbow(length(counts_of_days)))
+```
 
 
 
