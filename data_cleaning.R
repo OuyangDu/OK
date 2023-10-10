@@ -146,7 +146,7 @@ ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) +
 ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) +
   geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+
   geom_line(aes(y = sewingTeam01$no_of_workers/max(sewingTeam01$no_of_workers), color = "Normalized No. of workers"))+
-  labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Normalized No. of style Change")+
+  labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Normalized No. of workers")+
   scale_color_manual(values = c("Actual Productivity" = "black", "Normalized No. of workers" = "orange")) +
   theme_minimal() +
   theme(legend.position = "top")
