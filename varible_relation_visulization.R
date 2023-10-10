@@ -150,3 +150,12 @@ par(mfcol = c(3, 1))
 plot(finishingTeam01$actual_productivity, type = "l", col = "blue", main = "Line Plot in Base R")
 plot(finishingTeam01$no_of_workers, type = "l",col = "red")
 plot(finishingTeam01$over_time, type = "l",col = "green")
+
+plot(finishingTeam02$actual_productivity, type = "l", col = "blue", main = "Line Plot in Base R")
+plot(finishingTeam02$no_of_workers, type = "l",col = "red")
+plot(finishingTeam02$over_time, type = "l",col = "green")
+
+install.packages("ggplot2")
+library(ggplot2)
+ggplot(data = sewingTeam01, aes(x = sewingTeam01$date, y = sewingTeam01$actual_productivity)) +
+  geom_line()
