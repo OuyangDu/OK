@@ -14,13 +14,14 @@ library(reshape)
 ```
 
 ```{r}
-#data <- read.csv("/Users/karawei/Desktop/GRAD 3rd/ESE 527/garments_worker_productivity.csv")
-data <- read.csv("C:/Users/ThinkPad/Documents/GitHub/OK/worker_productivity.csv")
+data <- read.csv("/Users/karawei/Desktop/GRAD 3rd/ESE 527/garments_worker_productivity.csv")
+#data <- read.csv("C:/Users/ThinkPad/Documents/GitHub/OK/worker_productivity.csv")
+
+
+data_org <- read.csv("/Users/karawei/Desktop/GRAD 3rd/ESE 527/garments_worker_productivity.csv")
+#data_org <- read.csv("C:/Users/ThinkPad/Documents/GitHub/OK/worker_productivity.csv")
 
 data$department = replace(data$department, data$department=="sweing", "sewing")
-#data_org <- read.csv("/Users/karawei/Desktop/GRAD 3rd/ESE 527/garments_worker_productivity.csv")
-
-data_org <- read.csv("C:/Users/ThinkPad/Documents/GitHub/OK/worker_productivity.csv")
 data_org$department = replace(data_org$department, data_org$department=="finishing ", "finishing")
 data_org$department = replace(data_org$department, data_org$department=="sweing", "sewing")
 for (j in 1:length(data$department)){
