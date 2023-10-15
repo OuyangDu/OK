@@ -126,6 +126,30 @@ ggcorrplot(finishing_correlation_matrix,lab = TRUE)
 
 Notice that lots of the values are missing here. That's because they have mostly 0 values in the sub-datset per finishing department.
 
+## Take covariance between two every two variables in team finishing and team sewing:
+
+
+
+```{r}
+finishing_file_path <- "/Users/karawei/Downloads/combinedProductivityDataforFinishingTeams.csv"
+sewing_file_path <- "/Users/karawei/Documents/GitHub/OK/combinedProductivityDataforSewingTeams.csv"
+
+# Read the CSV file into a data frame
+finishing_data <- read.csv(finishing_file_path)
+sewing_data <- read.csv(sewing_file_path)
+
+finishing_correlation_matrix <- cor(finishing_data[2:12], use = "complete.obs")
+sewing_correlation_matrix <- cor(sewing_data[2:12], use = "complete.obs")
+ggcorrplot(finishing_correlation_matrix,lab = TRUE)
+ggcorrplot(sewing_correlation_matrix,lab = TRUE)
+```
+
+CONCERNS: By using the argument above. I remove all missing values and calculated the correlation matrix for producitivity between teams in both departments. However, I am worried that: 
+
+1) After we remove all missing values, the correlation might not be too reliable
+
+2) I am not sure if calculating the productivity would mean anything statistically. Because we have not yet established relationship between productivity and other variables. And teams collaborate during the manufacturing process instead of at the final productivity.
+
 ## We draw box plots for all variables in original dataset:
 
 ```{r}
