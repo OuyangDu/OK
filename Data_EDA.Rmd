@@ -269,121 +269,485 @@ We first combine all productivity for teams into two dataset - one for the finis
 ```
 
 
+## Checking outliers for departments
+
+From both the histograms and boxplots, we realize there are outliers for the sewing department. To deal with such problems, we
+
+
 
 #Incentive
-######################################################################################
+
+Between teams by department, we want to know as time goes, whether the change of productivity can be observed from other variables. I.e. we investigate the patterns of productivity v.s. variables.
+
 ```{r}
 ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) +
   geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+
   geom_line(aes(y = sewingTeam01$incentive/max(sewingTeam01$incentive), color = "Normalized Incentive"))+
-  labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Targeted Normalized Incentive")+
-  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red")) +
-  theme_minimal() +
-  theme(legend.position = "top")
-```
-
-#Target Productivity
-######################################################################################
-```{r}
-ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) +
-  geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+
   geom_line(aes(y = sewingTeam01$targeted_productivity, color = "Targeted Productivity"))+
-  labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Targeted Productivity")+
-  scale_color_manual(values = c("Actual Productivity" = "black", "Targeted Productivity" = "blue")) +
-  theme_minimal() +
-  theme(legend.position = "top")
-```
-
-#SMV
-######################################################################################
-```{r}
-ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) +
-  geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+
-  geom_line(aes(y = sewingTeam01$smv/max(sewingTeam01$smv), color = "Normalized SMV"))+
-  labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Normalized SMV")+
-  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized SMV" = "green")) +
-  theme_minimal() +
-  theme(legend.position = "top")
-```
-
-#WIP
-#####################################################################################
-```{r}
-ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) +
-  geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+
+   geom_line(aes(y = sewingTeam01$smv/max(sewingTeam01$smv), color = "Normalized SMV"))+
   geom_line(aes(y = sewingTeam01$wip/max(sewingTeam01$wip), color = "Normalized WIP"))+
-  labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Normalized WIP")+
-  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized WIP" = "purple")) +
-  theme_minimal() +
-  theme(legend.position = "top")
-```
-
-#overtime
-###########################################################################################################
-```{r}
-ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) +
-  geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+
   geom_line(aes(y = sewingTeam01$over_time/max(sewingTeam01$over_time), color = "Normalized Overtime"))+
-  labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Normalized Overtime")+
-  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Overtime" = "magenta")) +
-    theme_minimal() +
-    theme(legend.position = "top")
-```
-
-
-#Idle_time
-############################################################################################################
-```{r}
-ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) +
-  geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+
   geom_line(aes(y = sewingTeam01$idle_time, color = "Idle_time"))+
-  labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Idle_time")+
-  scale_color_manual(values = c("Actual Productivity" = "black", "Idle_time" = "cyan")) +
-  theme_minimal() +
-  theme(legend.position = "top")
-```
-
-
-#Idle_men
-############################################################################################################
-```{r}
-ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) +
-  geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+
   geom_line(aes(y = sewingTeam01$idle_men, color = "Idle_Worker"))+
-  labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Idle_Worker")+
-  scale_color_manual(values = c("Actual Productivity" = "black", "Idle_Worker" = "brown")) +
-  theme_minimal() +
-  theme(legend.position = "top")
-```
-
-
-#No. of style Change
-############################################################################################################
-
-```{r}
-ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) +
-  geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+
   geom_line(aes(y = sewingTeam01$no_of_style_change/max(sewingTeam01$no_of_style_change), color = "Normalized No. of style Change"))+
-  labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Normalized No. of style Change")+
-  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized No. of style Change" = "pink")) +
+  geom_line(aes(y = sewingTeam01$no_of_workers/max(sewingTeam01$no_of_workers), color = "Normalized No. of workers"))+
+  
+  
+  labs(x="Date", y = "Scale as Productivity", title = "SewingTeam1 Productivity vs Other Variables")+
+  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red","Targeted Productivity" = "blue", "Normalized SMV" = "green", "Normalized WIP" = "purple", "Normalized Overtime" = "magenta","Idle_time" = "cyan", "Idle_Worker" = "brown", "Normalized No. of style Change" = "pink", "Normalized No. of workers" = "orange")) +
   theme_minimal() +
   theme(legend.position = "top")
 ```
-
-
-#Normalized No. of workers
-
-############################################################################################################
 
 ```{r}
-ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) +
-  geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+
-  geom_line(aes(y = sewingTeam01$no_of_workers/max(sewingTeam01$no_of_workers), color = "Normalized No. of workers"))+
-  labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Normalized No. of workers")+
-  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized No. of workers" = "orange")) +
+ggplot(data = sewingTeam02, aes(x = sewingTeam02$date)) +
+  geom_line(aes(y= sewingTeam02$actual_productivity,color="Actual Productivity"))+
+  geom_line(aes(y = sewingTeam02$incentive/max(sewingTeam02$incentive), color = "Normalized Incentive"))+
+  geom_line(aes(y = sewingTeam02$targeted_productivity, color = "Targeted Productivity"))+
+   geom_line(aes(y = sewingTeam02$smv/max(sewingTeam02$smv), color = "Normalized SMV"))+
+  geom_line(aes(y = sewingTeam02$wip/max(sewingTeam02$wip), color = "Normalized WIP"))+
+  geom_line(aes(y = sewingTeam02$over_time/max(sewingTeam02$over_time), color = "Normalized Overtime"))+
+  geom_line(aes(y = sewingTeam02$idle_time/max(sewingTeam02$idle_time), color = "Idle_time"))+
+  geom_line(aes(y = sewingTeam02$idle_men/max(sewingTeam02$idle_men), color = "Idle_Worker"))+
+  geom_line(aes(y = sewingTeam02$no_of_style_change/max(sewingTeam02$no_of_style_change), color = "Normalized No. of style Change"))+
+  geom_line(aes(y = sewingTeam02$no_of_workers/max(sewingTeam02$no_of_workers), color = "Normalized No. of workers"))+
+  
+  
+  labs(x="Date", y = "Scale as Productivity", title = "SewingTeam2 Productivity vs Other Variables")+
+  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red","Targeted Productivity" = "blue", "Normalized SMV" = "green", "Normalized WIP" = "purple", "Normalized Overtime" = "magenta","Idle_time" = "cyan", "Idle_Worker" = "brown", "Normalized No. of style Change" = "pink", "Normalized No. of workers" = "orange")) +
   theme_minimal() +
   theme(legend.position = "top")
 ```
+
+
+
+```{r}
+team_numbers <- c(01,02,03,04,05,06,07,08,09,10,11,12)
+
+plot_list <- list()
+for (team_number in team_numbers) {
+  team_data <- get(paste0("sewingTeam", sprintf("%02d", team_number)))
+
+  if (max(team_data$idle_time) != 0) {
+    if (max(team_data$idle_men) != 0) {
+      p <- ggplot(data = team_data, aes(x = team_data$date)) +
+        geom_line(aes(y = team_data$actual_productivity, color = "Actual Productivity")) +
+        geom_line(aes(y = team_data$incentive / max(team_data$incentive), color = "Normalized Incentive")) +
+        geom_line(aes(y = team_data$targeted_productivity, color = "Targeted Productivity")) +
+        geom_line(aes(y = team_data$smv / max(team_data$smv), color = "Normalized SMV")) +
+        geom_line(aes(y = team_data$wip / max(team_data$wip), color = "Normalized WIP")) +
+        geom_line(aes(y = team_data$idle_time / max(team_data$idle_time), color = "Idle_time")) +
+        geom_line(aes(y = team_data$idle_men / max(team_data$idle_men), color = "Idle_Worker")) +
+        geom_line(aes(y = team_data$no_of_style_change / max(team_data$no_of_style_change), color = "Normalized No. of style Change")) +
+        geom_line(aes(y = team_data$no_of_workers / max(team_data$no_of_workers), color = "Normalized No. of workers"))
+    } else {
+      p <- ggplot(data = team_data, aes(x = team_data$date)) +
+        geom_line(aes(y = team_data$actual_productivity, color = "Actual Productivity")) +
+        geom_line(aes(y = team_data$incentive / max(team_data$incentive), color = "Normalized Incentive")) +
+        geom_line(aes(y = team_data$targeted_productivity, color = "Targeted Productivity")) +
+        geom_line(aes(y = team_data$smv / max(team_data$smv), color = "Normalized SMV")) +
+        geom_line(aes(y = team_data$wip / max(team_data$wip), color = "Normalized WIP")) +
+        geom_line(aes(y = team_data$idle_time / max(team_data$idle_time), color = "Idle_time")) +
+        geom_line(aes(y = team_data$idle_men / team_data$idle_men, color = "Idle_Worker")) +
+        geom_line(aes(y = team_data$no_of_style_change / max(team_data$no_of_style_change), color = "Normalized No. of style Change")) +
+        geom_line(aes(y = team_data$no_of_workers / max(team_data$no_of_workers), color = "Normalized No. of workers"))
+    }
+  } else {
+    if (max(team_data$idle_men) != 0) {
+      p <- ggplot(data = team_data, aes(x = team_data$date)) +
+        geom_line(aes(y = team_data$actual_productivity, color = "Actual Productivity")) +
+        geom_line(aes(y = team_data$incentive / max(team_data$incentive), color = "Normalized Incentive")) +
+        geom_line(aes(y = team_data$targeted_productivity, color = "Targeted Productivity")) +
+        geom_line(aes(y = team_data$smv / max(team_data$smv), color = "Normalized SMV")) +
+        geom_line(aes(y = team_data$wip / max(team_data$wip), color = "Normalized WIP")) +
+        geom_line(aes(y = team_data$idle_time / team_data$idle_time, color = "Idle_time")) +
+        geom_line(aes(y = team_data$idle_men / max(team_data$idle_men), color = "Idle_Worker")) +
+        geom_line(aes(y = team_data$no_of_style_change / max(team_data$no_of_style_change), color = "Normalized No. of style Change")) +
+        geom_line(aes(y = team_data$no_of_workers / max(team_data$no_of_workers), color = "Normalized No. of workers"))
+    } else {
+      p <- ggplot(data = team_data, aes(x = team_data$date)) +
+        geom_line(aes(y = team_data$actual_productivity, color = "Actual Productivity")) +
+        geom_line(aes(y = team_data$incentive / max(team_data$incentive), color = "Normalized Incentive")) +
+        geom_line(aes(y = team_data$targeted_productivity, color = "Targeted Productivity")) +
+        geom_line(aes(y = team_data$smv / max(team_data$smv), color = "Normalized SMV")) +
+        geom_line(aes(y = team_data$wip / max(team_data$wip), color = "Normalized WIP")) +
+        geom_line(aes(y = team_data$idle_time / team_data$idle_time, color = "Idle_time")) +
+        geom_line(aes(y = team_data$idle_men, color = "Idle_Worker")) +  # No normalization
+        geom_line(aes(y = team_data$no_of_style_change / max(team_data$no_of_style_change), color = "Normalized No. of style Change")) +
+        geom_line(aes(y = team_data$no_of_workers / max(team_data$no_of_workers), color = "Normalized No. of workers"))
+    }
+  }
+
+  labs(x = "Date", y = "Scale as Productivity", title = "SewingTeam1 Productivity vs Other Variables") +
+  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red", "Targeted Productivity" = "blue", "Normalized SMV" = "green", "Normalized WIP" = "purple", "Idle_time" = "cyan", "Idle_Worker" = "brown", "Normalized No. of style Change" = "pink", "Normalized No. of workers" = "orange")) +
+  theme_minimal() +
+  theme(legend.position = "top")
+  plot_list[[team_number]] <- p
+}
+
+for (i in team_numbers) {
+  print(plot_list[[i]])
+}
+```
+
+```{r}
+for (i in team_numbers) {
+  print(plot_list[[i]])
+}
+```
+
+```{r}
+ggplot(data = sewingTeam03, aes(x = sewingTeam03$date)) +
+  geom_line(aes(y= sewingTeam03$actual_productivity,color="Actual Productivity"))+
+  geom_line(aes(y = sewingTeam03$incentive/max(sewingTeam03$incentive), color = "Normalized Incentive"))+
+  geom_line(aes(y = sewingTeam03$targeted_productivity, color = "Targeted Productivity"))+
+   geom_line(aes(y = sewingTeam03$smv/max(sewingTeam03$smv), color = "Normalized SMV"))+
+  geom_line(aes(y = sewingTeam03$wip/max(sewingTeam03$wip), color = "Normalized WIP"))+
+  geom_line(aes(y = sewingTeam03$over_time/max(sewingTeam03$over_time), color = "Normalized Overtime"))+
+  geom_line(aes(y = sewingTeam03$idle_time, color = "Idle_time"))+
+  geom_line(aes(y = sewingTeam03$idle_men, color = "Idle_Worker"))+
+  geom_line(aes(y = sewingTeam03$no_of_style_change/max(sewingTeam03$no_of_style_change), color = "Normalized No. of style Change"))+
+  geom_line(aes(y = sewingTeam03$no_of_workers/max(sewingTeam03$no_of_workers), color = "Normalized No. of workers"))+
+  
+  
+  labs(x="Date", y = "Scale as Productivity", title = "SewingTeam3 Productivity vs Other Variables")+
+  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red","Targeted Productivity" = "blue", "Normalized SMV" = "green", "Normalized WIP" = "purple", "Normalized Overtime" = "magenta","Idle_time" = "cyan", "Idle_Worker" = "brown", "Normalized No. of style Change" = "pink", "Normalized No. of workers" = "orange")) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+```{r}
+ggplot(data = sewingTeam04, aes(x = sewingTeam04$date)) +
+  geom_line(aes(y= sewingTeam04$actual_productivity,color="Actual Productivity"))+
+  geom_line(aes(y = sewingTeam04$incentive/max(sewingTeam04$incentive), color = "Normalized Incentive"))+
+  geom_line(aes(y = sewingTeam04$targeted_productivity, color = "Targeted Productivity"))+
+   geom_line(aes(y = sewingTeam04$smv/max(sewingTeam04$smv), color = "Normalized SMV"))+
+  geom_line(aes(y = sewingTeam04$wip/max(sewingTeam04$wip), color = "Normalized WIP"))+
+  geom_line(aes(y = sewingTeam04$over_time/max(sewingTeam04$over_time), color = "Normalized Overtime"))+
+  geom_line(aes(y = sewingTeam04$idle_time/max(sewingTeam04$idle_time), color = "Idle_time"))+
+  geom_line(aes(y = sewingTeam04$idle_men/max(sewingTeam04$idle_men), color = "Idle_Worker"))+
+  geom_line(aes(y = sewingTeam04$no_of_style_change/max(sewingTeam04$no_of_style_change), color = "Normalized No. of style Change"))+
+  geom_line(aes(y = sewingTeam04$no_of_workers/max(sewingTeam04$no_of_workers), color = "Normalized No. of workers"))+
+  
+  
+  labs(x="Date", y = "Scale as Productivity", title = "SewingTeam4 Productivity vs Other Variables")+
+  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red","Targeted Productivity" = "blue", "Normalized SMV" = "green", "Normalized WIP" = "purple", "Normalized Overtime" = "magenta","Idle_time" = "cyan", "Idle_Worker" = "brown", "Normalized No. of style Change" = "pink", "Normalized No. of workers" = "orange")) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+
+```{r}
+ggplot(data = sewingTeam05, aes(x = sewingTeam05$date)) +
+  geom_line(aes(y= sewingTeam05$actual_productivity,color="Actual Productivity"))+
+  geom_line(aes(y = sewingTeam05$incentive/max(sewingTeam05$incentive), color = "Normalized Incentive"))+
+  geom_line(aes(y = sewingTeam05$targeted_productivity, color = "Targeted Productivity"))+
+   geom_line(aes(y = sewingTeam05$smv/max(sewingTeam05$smv), color = "Normalized SMV"))+
+  geom_line(aes(y = sewingTeam05$wip/max(sewingTeam05$wip), color = "Normalized WIP"))+
+  geom_line(aes(y = sewingTeam05$over_time/max(sewingTeam05$over_time), color = "Normalized Overtime"))+
+  geom_line(aes(y = sewingTeam05$idle_time/max(sewingTeam05$idle_time), color = "Idle_time"))+
+  geom_line(aes(y = sewingTeam05$idle_men/max(sewingTeam05$idle_men), color = "Idle_Worker"))+
+  geom_line(aes(y = sewingTeam05$no_of_style_change/max(sewingTeam05$no_of_style_change), color = "Normalized No. of style Change"))+
+  geom_line(aes(y = sewingTeam05$no_of_workers/max(sewingTeam05$no_of_workers), color = "Normalized No. of workers"))+
+  
+  
+  labs(x="Date", y = "Scale as Productivity", title = "SewingTeam5 Productivity vs Other Variables")+
+  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red","Targeted Productivity" = "blue", "Normalized SMV" = "green", "Normalized WIP" = "purple", "Normalized Overtime" = "magenta","Idle_time" = "cyan", "Idle_Worker" = "brown", "Normalized No. of style Change" = "pink", "Normalized No. of workers" = "orange")) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+```{r}
+ggplot(data = sewingTeam06, aes(x = sewingTeam06$date)) +
+  geom_line(aes(y= sewingTeam06$actual_productivity,color="Actual Productivity"))+
+  geom_line(aes(y = sewingTeam06$incentive/max(sewingTeam06$incentive), color = "Normalized Incentive"))+
+  geom_line(aes(y = sewingTeam06$targeted_productivity, color = "Targeted Productivity"))+
+   geom_line(aes(y = sewingTeam06$smv/max(sewingTeam06$smv), color = "Normalized SMV"))+
+  geom_line(aes(y = sewingTeam06$wip/max(sewingTeam06$wip), color = "Normalized WIP"))+
+  geom_line(aes(y = sewingTeam06$over_time/max(sewingTeam06$over_time), color = "Normalized Overtime"))+
+  geom_line(aes(y = sewingTeam06$idle_time, color = "Idle_time"))+
+  geom_line(aes(y = sewingTeam06$idle_men, color = "Idle_Worker"))+
+  geom_line(aes(y = sewingTeam06$no_of_style_change/max(sewingTeam06$no_of_style_change), color = "Normalized No. of style Change"))+
+  geom_line(aes(y = sewingTeam06$no_of_workers/max(sewingTeam06$no_of_workers), color = "Normalized No. of workers"))+
+  
+  
+  labs(x="Date", y = "Scale as Productivity", title = "SewingTeam6 Productivity vs Other Variables")+
+  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red","Targeted Productivity" = "blue", "Normalized SMV" = "green", "Normalized WIP" = "purple", "Normalized Overtime" = "magenta","Idle_time" = "cyan", "Idle_Worker" = "brown", "Normalized No. of style Change" = "pink", "Normalized No. of workers" = "orange")) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+```{r}
+ggplot(data = sewingTeam07, aes(x = sewingTeam07$date)) +
+  geom_line(aes(y= sewingTeam07$actual_productivity,color="Actual Productivity"))+
+  geom_line(aes(y = sewingTeam07$incentive/max(sewingTeam07$incentive), color = "Normalized Incentive"))+
+  geom_line(aes(y = sewingTeam07$targeted_productivity, color = "Targeted Productivity"))+
+   geom_line(aes(y = sewingTeam07$smv/max(sewingTeam07$smv), color = "Normalized SMV"))+
+  geom_line(aes(y = sewingTeam07$wip/max(sewingTeam07$wip), color = "Normalized WIP"))+
+  geom_line(aes(y = sewingTeam07$over_time/max(sewingTeam07$over_time), color = "Normalized Overtime"))+
+  geom_line(aes(y = sewingTeam07$idle_time/max(sewingTeam07$idle_time), color = "Idle_time"))+
+  geom_line(aes(y = sewingTeam07$idle_men/max(sewingTeam07$idle_men), color = "Idle_Worker"))+
+  geom_line(aes(y = sewingTeam07$no_of_style_change/max(sewingTeam07$no_of_style_change), color = "Normalized No. of style Change"))+
+  geom_line(aes(y = sewingTeam07$no_of_workers/max(sewingTeam07$no_of_workers), color = "Normalized No. of workers"))+
+  
+  
+  labs(x="Date", y = "Scale as Productivity", title = "SewingTeam7 Productivity vs Other Variables")+
+  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red","Targeted Productivity" = "blue", "Normalized SMV" = "green", "Normalized WIP" = "purple", "Normalized Overtime" = "magenta","Idle_time" = "cyan", "Idle_Worker" = "brown", "Normalized No. of style Change" = "pink", "Normalized No. of workers" = "orange")) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+```{r}
+ggplot(data = sewingTeam08, aes(x = sewingTeam08$date)) +
+  geom_line(aes(y= sewingTeam08$actual_productivity,color="Actual Productivity"))+
+  geom_line(aes(y = sewingTeam08$incentive/max(sewingTeam08$incentive), color = "Normalized Incentive"))+
+  geom_line(aes(y = sewingTeam08$targeted_productivity, color = "Targeted Productivity"))+
+   geom_line(aes(y = sewingTeam08$smv/max(sewingTeam08$smv), color = "Normalized SMV"))+
+  geom_line(aes(y = sewingTeam08$wip/max(sewingTeam08$wip), color = "Normalized WIP"))+
+  geom_line(aes(y = sewingTeam08$over_time/max(sewingTeam08$over_time), color = "Normalized Overtime"))+
+  geom_line(aes(y = sewingTeam08$idle_time/max(sewingTeam08$idle_time), color = "Idle_time"))+
+  geom_line(aes(y = sewingTeam08$idle_men/max(sewingTeam08$idle_men), color = "Idle_Worker"))+
+  geom_line(aes(y = sewingTeam08$no_of_style_change/max(sewingTeam08$no_of_style_change), color = "Normalized No. of style Change"))+
+  geom_line(aes(y = sewingTeam08$no_of_workers/max(sewingTeam08$no_of_workers), color = "Normalized No. of workers"))+
+  
+  
+  labs(x="Date", y = "Scale as Productivity", title = "SewingTeam8 Productivity vs Other Variables")+
+  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red","Targeted Productivity" = "blue", "Normalized SMV" = "green", "Normalized WIP" = "purple", "Normalized Overtime" = "magenta","Idle_time" = "cyan", "Idle_Worker" = "brown", "Normalized No. of style Change" = "pink", "Normalized No. of workers" = "orange")) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+
+```{r}
+ggplot(data = sewingTeam09, aes(x = sewingTeam09$date)) +
+  geom_line(aes(y= sewingTeam09$actual_productivity,color="Actual Productivity"))+
+  geom_line(aes(y = sewingTeam09$incentive/max(sewingTeam09$incentive), color = "Normalized Incentive"))+
+  geom_line(aes(y = sewingTeam09$targeted_productivity, color = "Targeted Productivity"))+
+   geom_line(aes(y = sewingTeam09$smv/max(sewingTeam09$smv), color = "Normalized SMV"))+
+  geom_line(aes(y = sewingTeam09$wip/max(sewingTeam09$wip), color = "Normalized WIP"))+
+  geom_line(aes(y = sewingTeam09$over_time/max(sewingTeam09$over_time), color = "Normalized Overtime"))+
+  geom_line(aes(y = sewingTeam09$idle_time, color = "Idle_time"))+
+  geom_line(aes(y = sewingTeam09$idle_men, color = "Idle_Worker"))+
+  geom_line(aes(y = sewingTeam09$no_of_style_change/max(sewingTeam09$no_of_style_change), color = "Normalized No. of style Change"))+
+  geom_line(aes(y = sewingTeam09$no_of_workers/max(sewingTeam09$no_of_workers), color = "Normalized No. of workers"))+
+  
+  
+  labs(x="Date", y = "Scale as Productivity", title = "SewingTeam9 Productivity vs Other Variables")+
+  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red","Targeted Productivity" = "blue", "Normalized SMV" = "green", "Normalized WIP" = "purple", "Normalized Overtime" = "magenta","Idle_time" = "cyan", "Idle_Worker" = "brown", "Normalized No. of style Change" = "pink", "Normalized No. of workers" = "orange")) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+
+```{r}
+ggplot(data = sewingTeam10, aes(x = sewingTeam10$date)) +
+  geom_line(aes(y= sewingTeam10$actual_productivity,color="Actual Productivity"))+
+  geom_line(aes(y = sewingTeam10$incentive/max(sewingTeam10$incentive), color = "Normalized Incentive"))+
+  geom_line(aes(y = sewingTeam10$targeted_productivity, color = "Targeted Productivity"))+
+   geom_line(aes(y = sewingTeam10$smv/max(sewingTeam10$smv), color = "Normalized SMV"))+
+  geom_line(aes(y = sewingTeam10$wip/max(sewingTeam10$wip), color = "Normalized WIP"))+
+  geom_line(aes(y = sewingTeam10$over_time/max(sewingTeam10$over_time), color = "Normalized Overtime"))+
+  geom_line(aes(y = sewingTeam10$idle_time/max(sewingTeam10$idle_time), color = "Idle_time"))+
+  geom_line(aes(y = sewingTeam10$idle_men/max(sewingTeam10$idle_men), color = "Idle_Worker"))+
+  geom_line(aes(y = sewingTeam10$no_of_style_change/max(sewingTeam10$no_of_style_change), color = "Normalized No. of style Change"))+
+  geom_line(aes(y = sewingTeam10$no_of_workers/max(sewingTeam10$no_of_workers), color = "Normalized No. of workers"))+
+  
+  
+  labs(x="Date", y = "Scale as Productivity", title = "SewingTeam10 Productivity vs Other Variables")+
+  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red","Targeted Productivity" = "blue", "Normalized SMV" = "green", "Normalized WIP" = "purple", "Normalized Overtime" = "magenta","Idle_time" = "cyan", "Idle_Worker" = "brown", "Normalized No. of style Change" = "pink", "Normalized No. of workers" = "orange")) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+
+```{r}
+ggplot(data = sewingTeam11, aes(x = sewingTeam11$date)) +
+  geom_line(aes(y= sewingTeam11$actual_productivity,color="Actual Productivity"))+
+  geom_line(aes(y = sewingTeam11$incentive/max(sewingTeam11$incentive), color = "Normalized Incentive"))+
+  geom_line(aes(y = sewingTeam11$targeted_productivity, color = "Targeted Productivity"))+
+   geom_line(aes(y = sewingTeam11$smv/max(sewingTeam11$smv), color = "Normalized SMV"))+
+  geom_line(aes(y = sewingTeam11$wip/max(sewingTeam11$wip), color = "Normalized WIP"))+
+  geom_line(aes(y = sewingTeam11$over_time/max(sewingTeam11$over_time), color = "Normalized Overtime"))+
+  geom_line(aes(y = sewingTeam11$idle_time/max(sewingTeam11$idle_time), color = "Idle_time"))+
+  geom_line(aes(y = sewingTeam11$idle_men/max(sewingTeam11$idle_men), color = "Idle_Worker"))+
+  geom_line(aes(y = sewingTeam11$no_of_style_change/max(sewingTeam11$no_of_style_change), color = "Normalized No. of style Change"))+
+  geom_line(aes(y = sewingTeam11$no_of_workers/max(sewingTeam11$no_of_workers), color = "Normalized No. of workers"))+
+  
+  
+  labs(x="Date", y = "Scale as Productivity", title = "SewingTeam11 Productivity vs Other Variables")+
+  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red","Targeted Productivity" = "blue", "Normalized SMV" = "green", "Normalized WIP" = "purple", "Normalized Overtime" = "magenta","Idle_time" = "cyan", "Idle_Worker" = "brown", "Normalized No. of style Change" = "pink", "Normalized No. of workers" = "orange")) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+```{r}
+ggplot(data = sewingTeam12, aes(x = sewingTeam12$date)) +
+  geom_line(aes(y= sewingTeam12$actual_productivity,color="Actual Productivity"))+
+  geom_line(aes(y = sewingTeam12$incentive/max(sewingTeam12$incentive), color = "Normalized Incentive"))+
+  geom_line(aes(y = sewingTeam12$targeted_productivity, color = "Targeted Productivity"))+
+   geom_line(aes(y = sewingTeam12$smv/max(sewingTeam12$smv), color = "Normalized SMV"))+
+  geom_line(aes(y = sewingTeam12$wip/max(sewingTeam12$wip), color = "Normalized WIP"))+
+  geom_line(aes(y = sewingTeam12$over_time/max(sewingTeam12$over_time), color = "Normalized Overtime"))+
+  geom_line(aes(y = sewingTeam12$idle_time, color = "Idle_time"))+
+  geom_line(aes(y = sewingTeam12$idle_men, color = "Idle_Worker"))+
+  geom_line(aes(y = sewingTeam12$no_of_style_change, color = "Normalized No. of style Change"))+
+  geom_line(aes(y = sewingTeam12$no_of_workers/max(sewingTeam12$no_of_workers), color = "Normalized No. of workers"))+
+  
+  
+  labs(x="Date", y = "Scale as Productivity", title = "SewingTeam12 Productivity vs Other Variables")+
+  scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Incentive" = "red","Targeted Productivity" = "blue", "Normalized SMV" = "green", "Normalized WIP" = "purple", "Normalized Overtime" = "magenta","Idle_time" = "cyan", "Idle_Worker" = "brown", "Normalized No. of style Change" = "pink", "Normalized No. of workers" = "orange")) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+
+
+
+
+```{r}
+sewingTeam01$idle_time[sewingTeam01$idle_time == max(sewingTeam01$idle_time)]
+sewingTeam02$idle_time[sewingTeam02$idle_time == max(sewingTeam02$idle_time)]
+sewingTeam03$idle_time[sewingTeam03$idle_time == max(sewingTeam03$idle_time)]
+sewingTeam04$idle_time[sewingTeam04$idle_time == max(sewingTeam04$idle_time)]
+sewingTeam05$idle_time[sewingTeam05$idle_time == max(sewingTeam05$idle_time)]
+sewingTeam06$idle_time[sewingTeam06$idle_time == max(sewingTeam06$idle_time)]
+sewingTeam07$idle_time[sewingTeam07$idle_time == max(sewingTeam07$idle_time)]
+sewingTeam08$idle_time[sewingTeam08$idle_time == max(sewingTeam08$idle_time)]
+sewingTeam09$idle_time[sewingTeam09$idle_time == max(sewingTeam09$idle_time)]
+sewingTeam10$idle_time[sewingTeam10$idle_time == max(sewingTeam10$idle_time)]
+sewingTeam11$idle_time[sewingTeam11$idle_time == max(sewingTeam11$idle_time)]
+sewingTeam12$idle_time[sewingTeam12$idle_time == max(sewingTeam12$idle_time)]
+```
+
+```{r}
+sewingTeam01$idle_men[sewingTeam01$idle_men == max(sewingTeam01$idle_men)]
+sewingTeam02$idle_men[sewingTeam02$idle_men == max(sewingTeam02$idle_men)]
+sewingTeam03$idle_men[sewingTeam03$idle_men == max(sewingTeam03$idle_men)]
+sewingTeam04$idle_men[sewingTeam04$idle_men == max(sewingTeam04$idle_men)]
+sewingTeam05$idle_men[sewingTeam05$idle_men == max(sewingTeam05$idle_men)]
+sewingTeam06$idle_men[sewingTeam06$idle_men == max(sewingTeam06$idle_men)]
+sewingTeam07$idle_men[sewingTeam07$idle_men == max(sewingTeam07$idle_men)]
+sewingTeam08$idle_men[sewingTeam08$idle_men == max(sewingTeam08$idle_men)]
+sewingTeam09$idle_men[sewingTeam09$idle_men == max(sewingTeam09$idle_men)]
+sewingTeam10$idle_men[sewingTeam10$idle_men == max(sewingTeam10$idle_men)]
+sewingTeam11$idle_men[sewingTeam11$idle_men == max(sewingTeam11$idle_men)]
+sewingTeam12$idle_men[sewingTeam12$idle_men == max(sewingTeam12$idle_men)]
+```
+
+
+<!-- ###################################################################################### -->
+<!-- ```{r} -->
+<!-- # ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) + -->
+<!-- #   geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+ -->
+<!-- #   geom_line(aes(y = sewingTeam01$incentive/max(sewingTeam01$incentive), color = "Normalized Incentive"))+ -->
+<!-- #   labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Targeted Normalized Incentive")+ -->
+<!-- #   scale_color_manual(values = c("Actual Productivity" = "black","Normalized Incentive" = "red")) + -->
+<!-- #   theme_minimal() + -->
+<!-- #   theme(legend.position = "top") -->
+<!-- ``` -->
+
+<!-- #Target Productivity -->
+<!-- ###################################################################################### -->
+<!-- ```{r} -->
+<!-- ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) + -->
+<!--   geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+ -->
+<!--   geom_line(aes(y = sewingTeam01$targeted_productivity, color = "Targeted Productivity"))+ -->
+<!--   labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Targeted Productivity")+ -->
+<!--   scale_color_manual(values = c("Actual Productivity" = "black", "Targeted Productivity" = "blue")) + -->
+<!--   theme_minimal() + -->
+<!--   theme(legend.position = "top") -->
+<!-- ``` -->
+
+<!-- #SMV -->
+<!-- ###################################################################################### -->
+<!-- ```{r} -->
+<!-- ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) + -->
+<!--   geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+ -->
+<!--   geom_line(aes(y = sewingTeam01$smv/max(sewingTeam01$smv), color = "Normalized SMV"))+ -->
+<!--   labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Normalized SMV")+ -->
+<!--   scale_color_manual(values = c("Actual Productivity" = "black", "Normalized SMV" = "green")) + -->
+<!--   theme_minimal() + -->
+<!--   theme(legend.position = "top") -->
+<!-- ``` -->
+
+<!-- #WIP -->
+<!-- ##################################################################################### -->
+<!-- ```{r} -->
+<!-- ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) + -->
+<!--   geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+ -->
+<!--   geom_line(aes(y = sewingTeam01$wip/max(sewingTeam01$wip), color = "Normalized WIP"))+ -->
+<!--   labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Normalized WIP")+ -->
+<!--   scale_color_manual(values = c("Actual Productivity" = "black", "Normalized WIP" = "purple")) + -->
+<!--   theme_minimal() + -->
+<!--   theme(legend.position = "top") -->
+<!-- ``` -->
+
+<!-- #overtime -->
+<!-- ########################################################################################################### -->
+<!-- ```{r} -->
+<!-- ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) + -->
+<!--   geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+ -->
+<!--   geom_line(aes(y = sewingTeam01$over_time/max(sewingTeam01$over_time), color = "Normalized Overtime"))+ -->
+<!--   labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Normalized Overtime")+ -->
+<!--   scale_color_manual(values = c("Actual Productivity" = "black", "Normalized Overtime" = "magenta")) + -->
+<!--     theme_minimal() + -->
+<!--     theme(legend.position = "top") -->
+<!-- ``` -->
+
+
+<!-- #Idle_time -->
+<!-- ############################################################################################################ -->
+<!-- ```{r} -->
+<!-- ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) + -->
+<!--   geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+ -->
+<!--   geom_line(aes(y = sewingTeam01$idle_time, color = "Idle_time"))+ -->
+<!--   labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Idle_time")+ -->
+<!--   scale_color_manual(values = c("Actual Productivity" = "black", "Idle_time" = "cyan")) + -->
+<!--   theme_minimal() + -->
+<!--   theme(legend.position = "top") -->
+<!-- ``` -->
+
+
+<!-- #Idle_men -->
+<!-- ############################################################################################################ -->
+<!-- ```{r} -->
+<!-- ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) + -->
+<!--   geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+ -->
+<!--   geom_line(aes(y = sewingTeam01$idle_men, color = "Idle_Worker"))+ -->
+<!--   labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Idle_Worker")+ -->
+<!--   scale_color_manual(values = c("Actual Productivity" = "black", "Idle_Worker" = "brown")) + -->
+<!--   theme_minimal() + -->
+<!--   theme(legend.position = "top") -->
+<!-- ``` -->
+
+
+<!-- #No. of style Change -->
+<!-- ############################################################################################################ -->
+
+<!-- ```{r} -->
+<!-- ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) + -->
+<!--   geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+ -->
+<!--   geom_line(aes(y = sewingTeam01$no_of_style_change/max(sewingTeam01$no_of_style_change), color = "Normalized No. of style Change"))+ -->
+<!--   labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Normalized No. of style Change")+ -->
+<!--   scale_color_manual(values = c("Actual Productivity" = "black", "Normalized No. of style Change" = "pink")) + -->
+<!--   theme_minimal() + -->
+<!--   theme(legend.position = "top") -->
+<!-- ``` -->
+
+
+<!-- #Normalized No. of workers -->
+
+<!-- ############################################################################################################ -->
+
+<!-- ```{r} -->
+<!-- ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) + -->
+<!--   geom_line(aes(y= sewingTeam01$actual_productivity,color="Actual Productivity"))+ -->
+<!--   geom_line(aes(y = sewingTeam01$no_of_workers/max(sewingTeam01$no_of_workers), color = "Normalized No. of workers"))+ -->
+<!--   labs(x="Date", y = NA, title = "SewingTeam1 Productivity vs Normalized No. of workers")+ -->
+<!--   scale_color_manual(values = c("Actual Productivity" = "black", "Normalized No. of workers" = "orange")) + -->
+<!--   theme_minimal() + -->
+<!--   theme(legend.position = "top") -->
+<!-- ``` -->
 
 
 
