@@ -1,8 +1,10 @@
 ---
 title: "Data_EDA"
-author: "Team OK: Kara Wei, Ouyang Du"
-date: "`r Sys.Date()`"
-output: html_document
+author: 'Team OK: Kara Wei, Ouyang Du'
+date: '`r Sys.Date()`'
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -12,6 +14,18 @@ library(ggcorrplot)
 library(tidyr)
 library(reshape)
 ```
+
+## Learning Objects:
+
+We first zoom in the sewing team since there's more data available and no missing value contained. We want to explore the data from following perspectives:
+
+1) How's productivity affected by each variables? (simply looking at the time series plots)
+
+2) Is there a team/teams that outperformed the rest? What set them apart?
+
+3) Is it possible if teams collaborate?
+
+4) How does the workflow look like?
 
 ```{r}
 data <- read.csv("/Users/karawei/Desktop/GRAD 3rd/ESE 527/garments_worker_productivity.csv")
@@ -100,67 +114,7 @@ hist(data[["no_of_style_change"]],main="Number of Style Change",xlab="Number of 
 hist(data[["no_of_workers"]],main="Number of Workers in a Team",xlab="Number of Workers in a Team")
 ```
 
-We then draw he distributions of all numerical variables. From the numerical variables, we notice that there are tails for several variables:target productivity, over time, financial incentives, etc.
-
-## We create correlation map for numerical variables above:
-
-```{r}
-correlation_matrix <- cor(data[6:14])
-ggcorrplot(correlation_matrix,lab = TRUE)
-```
-
-
-# For sewing department:
-
-```{r}
-sewing_correlation_matrix <- cor(sewing[6:14])
-ggcorrplot(sewing_correlation_matrix,lab = TRUE)
-```
-
-# For finishing department:
-
-```{r}
-finishing_correlation_matrix <- cor(finishing[,c(6:7,9:14)])
-ggcorrplot(finishing_correlation_matrix,lab = TRUE)
-head(finishing[,c(6:7,9:14)])
-```
-
-Notice that lots of the values are missing here. That's because they have mostly 0 values in the sub-datset per finishing department.
-
-## Take covariance between two every two variables in team finishing and team sewing:
-
-
-
-```{r}
-finishing_file_path <- "/Users/karawei/Downloads/combinedProductivityDataforFinishingTeams.csv"
-sewing_file_path <- "/Users/karawei/Documents/GitHub/OK/combinedDataforProductivity.csv"
-
-# Read the CSV file into a data frame
-finishing_data <- read.csv(finishing_file_path)
-sewing_data <- read.csv(sewing_file_path)
-
-finishing_correlation_matrix <- cor(finishing_data[2:12], use = "complete.obs")
-sewing_correlation_matrix <- cor(sewing_data[2:13], use = "complete.obs")
-ggcorrplot(finishing_correlation_matrix,lab = TRUE)
-ggcorrplot(sewing_correlation_matrix,lab = TRUE)
-```
-```{r}
-sewing_remove = na.omit((sewing_data_new))
-nrow(sewing_remove)
-finishing_remove = na.omit((finishing_data))
-nrow(finishing_remove)
-head(finishing_remove)
-```
-
-CONCERNS: By using the argument above. I remove all missing values and calculated the correlation matrix for producitivity between teams in both departments. However, I am worried that: 
-
-1) After we remove all missing values, the correlation might not be too reliable
-
-2) I can;t run the solution for team12ProductivityFishing. Because there's too many missing values.
-
-3) I am not sure if calculating the productivity would mean anything statistically. Because we have not yet established relationship between productivity and other variables. And teams collaborate during the manufacturing process instead of at the final productivity. -> sol: But it shows productivity between teams might not be independent. 
-
-
+We want to understand the overall data structure and hope to catch any patters. We then draw the frequency distribution of all numerical variables. From the numerical variables, we notice that there are tails for several variables:target productivity, over time, financial incentives, etc.
 
 ## We draw box plots for all variables in original dataset:
 
@@ -178,37 +132,24 @@ boxplot(data[["no_of_style_change"]],main="Number of Style Change",xlab="Number 
 boxplot(data[["no_of_workers"]],main="Number of Workers in a Team",xlab="Number of Workers in a Team")
 ```
 
-From the box plots, we see that most of the variables have outliers. 
+We further investigate the distribution via box plots. From the box plots, we see that most of the variables have outliers. This confirms what we see from the histogram - heav tails for most variables. 
+
+## We create correlation map for numerical variables above:
+
+To make sure we fit the right model & knowing from the fact that time series variables are generally correlated, we develop the correlation matrix. We define high correlation to be such that $|Cor(X,Y)| > 0.7, \forall X, Y \in $ $\{$numerical variables$\}$. 
 
 ```{r}
-# ggplot(gather(data[,-c(1:5)]), aes(key,value)) +
-# geom_boxplot() +
-# facet_wrap(~key, scales = 'free') +
-# labs(title = "Boxplots of all numerical variables")+
-#   theme_minimal()
+correlation_matrix <- cor(data[6:14])
+ggcorrplot(correlation_matrix,lab = TRUE)
 ```
 
+From the correlation matrix, we observe that smv and no_of_workers might be highly correlated (covariance = 0.91). Also over_time and no_of_workers might be highly correlated correlated (covariance = 0.73). We also observe that wip has missing covariance with all numerical variables but itself. After reviewing the distribution of wip. We realize that wip only has values when the department = sewing. 
 
-```{r}
-data_no_team = data_org[,c(1:4,6:15)]
-ggplot(melt(data_no_team),aes(x=department,y=value)) +
-facet_wrap(~variable, scales="free") +
-geom_boxplot()+
-  labs(title = "Boxplots of all numerical variables by departments")+
-  theme_minimal()
-```
-
-If we zoom in the box plots per department, sewing department has higher mean for must of the numerical values. For most of the numerical variables -  targeted_productivity, smv, wip, idle_time, idel_men, and no_of_style_change, no_of_workers, and actual_productivity - sewing department have higher outliers. 
-
-```{r}
-# ggplot(melt(data_org),aes(x=department)) +
-# facet_wrap(~variable, scales="free") +
-# geom_bar()+
-#   labs(title = "Bar charts of all numerical variables by departments")+
-#   theme_minimal()
-```
+Naturally, We break the dataset into two parts based on the department they belong and revisit the collinearity issue. 
 
 ## Create pie chart for department to see the distribution:
+
+We first look at the proportion of data by department.
 
 ```{r,warning = FALSE}
 counts_of_departments = c(length(data_org$department[data_org$department=="sewing"]), length(data_org$department[data_org$department=="finishing"]))
@@ -237,6 +178,96 @@ pie(counts_of_departments, labels = departments_pie_labels,main = "Pie Chart of 
 ```
 
 We see that sewing department has more corresponding rows than finishing. 
+
+## Distribution of variables by departmens via box plots. 
+
+
+```{r}
+# ggplot(gather(data[,-c(1:5)]), aes(key,value)) +
+# geom_boxplot() +
+# facet_wrap(~key, scales = 'free') +
+# labs(title = "Boxplots of all numerical variables")+
+#   theme_minimal()
+```
+
+
+```{r}
+data_no_team = data_org[,c(1:4,6:15)]
+ggplot(melt(data_no_team),aes(x=department,y=value)) +
+facet_wrap(~variable, scales="free") +
+geom_boxplot()+
+  labs(title = "Boxplots of all numerical variables by departments")+
+  theme_minimal()
+```
+
+If we zoom in the box plots per department, sewing department has higher mean for must of the numerical values. For most of the numerical variables -  targeted_productivity, smv, wip, idle_time, idel_men, and no_of_style_change, no_of_workers, and actual_productivity - sewing department have higher outliers. This once support the idea that distributions are different between departments. Thus, we should analyze the dataset seperately. 
+
+# For sewing department:
+
+```{r}
+sewing_correlation_matrix <- cor(sewing[6:14])
+ggcorrplot(sewing_correlation_matrix,lab = TRUE)
+```
+
+We conclude that within the sewing department, we do not see correlation between variables based on the absolute covariance value. Thus, we might assume all variables are independent within the sewing department for now.
+
+## For finishing department:
+
+```{r}
+finishing_correlation_matrix <- cor(finishing[,c(6:7,9:14)])
+ggcorrplot(finishing_correlation_matrix,lab = TRUE)
+head(finishing[,c(6:7,9:14)])
+```
+
+```{r}
+finishing[finishing["idle_time"]!=0]
+finishing[finishing["idle_men"]!=0]
+finishing[finishing["no_of_style_change"]!=0]
+```
+
+Notice that lots of the values are missing here for correlation between idle_time, idle_men, and no_of_style_change. That's because they have 0 values for all observation. Thus, the correlation is $\frac{0}{0}$.
+
+## Take covariance between productivity in team finishing and team sewing:
+
+Then we wonder if teams in one department might collaborate. If their productivity are correlated, then it's possible that some teams help the others. 
+
+```{r}
+finishing_file_path <- "/Users/karawei/Downloads/combinedProductivityDataforFinishingTeams.csv"
+sewing_file_path <- "/Users/karawei/Documents/GitHub/OK/combinedDataforProductivity.csv"
+
+# Read the CSV file into a data frame
+finishing_data <- read.csv(finishing_file_path)
+sewing_data <- read.csv(sewing_file_path)
+
+finishing_correlation_matrix <- cor(finishing_data[2:12], use = "complete.obs")
+sewing_correlation_matrix <- cor(sewing_data[2:13], use = "complete.obs")
+ggcorrplot(finishing_correlation_matrix,lab = TRUE)
+ggcorrplot(sewing_correlation_matrix,lab = TRUE)
+```
+```{r}
+sewing_remove = na.omit((sewing_data[2:13]))
+nrow(sewing_remove)
+finishing_remove = na.omit((finishing_data))
+nrow(finishing_remove)
+head(finishing_remove)
+```
+
+We first combine all productivity for teams into two dataset - one for the finishing department and other one for the sewing department. Because the length for teams are different -> some teams work on more dates and the other. So we remove all the rows with NA values. We are able to run the covariance matrix for team 1 - team 11 of the finishing department. We observe that finishing department has high covariance between almost all teams. . We also run the covariance matrix for team 1 - team 12 of the sewing department. Sewing department has no high correlation between teams. However, there are questions: 
+
+1) After we remove all missing values, the correlation might not be too reliable
+
+2) I can't run the solution for team12Productivity Fishing. Because there's too many missing values. -> In fact, only one row (row 26 on date 01/31/2015) has complete values for producticity on all dates. 
+
+3) I am not sure if calculating the productivity would mean anything statistically. Because we have not yet established relationship between productivity and other variables. And teams collaborate during the manufacturing process instead of at the final productivity. -> sol: But it shows productivity between teams might not be independent. 
+
+```{r}
+# ggplot(melt(data_org),aes(x=department)) +
+# facet_wrap(~variable, scales="free") +
+# geom_bar()+
+#   labs(title = "Bar charts of all numerical variables by departments")+
+#   theme_minimal()
+```
+
 
 
 #Incentive
@@ -353,3 +384,9 @@ ggplot(data = sewingTeam01, aes(x = sewingTeam01$date)) +
   theme_minimal() +
   theme(legend.position = "top")
 ```
+
+
+
+
+
+
