@@ -155,7 +155,190 @@ plot(finishingTeam02$actual_productivity, type = "l", col = "blue", main = "Line
 plot(finishingTeam02$no_of_workers, type = "l",col = "red")
 plot(finishingTeam02$over_time, type = "l",col = "green")
 
-install.packages("ggplot2")
+install.packages("ggplot2")http://127.0.0.1:9249/graphics/6e0f41d2-4d8a-4e53-b3fb-eeee08b1d746.png
 library(ggplot2)
 ggplot(data = sewingTeam01, aes(x = sewingTeam01$date, y = sewingTeam01$actual_productivity)) +
   geom_line()
+
+hist(sewingTeam01$actual_productivity)
+hist(sewingTeam02$actual_productivity)
+hist(sewingTeam03$actual_productivity)
+hist(sewingTeam04$actual_productivity)
+hist(sewingTeam05$actual_productivity)
+hist(sewingTeam06$actual_productivity)
+hist(sewingTeam07$actual_productivity)
+hist(sewingTeam08$actual_productivity)
+hist(sewingTeam09$actual_productivity)
+hist(sewingTeam10$actual_productivity)
+hist(sewingTeam11$actual_productivity)
+hist(sewingTeam12$actual_productivity)
+
+# Calculating the mean of each team variable
+# Team01
+mean01=mean(sewingTeam01$actual_productivity)
+var01 =var(sewingTeam01$actual_productivity)
+meanWorker01=mean(sewingTeam01$no_of_workers)
+meanTP01=mean(sewingTeam01$targeted_productivity)
+meanSMV01=mean(sewingTeam01$smv)
+meanWIP01=mean(sewingTeam01$wip)
+meanInsentive01=mean(sewingTeam01$incentive)
+meanOvertime01=mean(sewingTeam01$over_time)
+
+#Team02
+mean02=mean(sewingTeam02$actual_productivity)
+var02 =var(sewingTeam02$actual_productivity)
+meanWorker02=mean(sewingTeam02$no_of_workers)
+meanTP02=mean(sewingTeam02$targeted_productivity)
+meanSMV02=mean(sewingTeam02$smv)
+meanWIP02=mean(sewingTeam02$wip)
+meanInsentive02=mean(sewingTeam02$incentive)
+meanOvertime02=mean(sewingTeam02$over_time)
+
+#Team03
+mean03=mean(sewingTeam03$actual_productivity)
+var03 =var(sewingTeam03$actual_productivity)
+meanWorker03=mean(sewingTeam03$no_of_workers)
+meanTP03=mean(sewingTeam03$targeted_productivity)
+meanSMV03=mean(sewingTeam03$smv)
+meanWIP03=mean(sewingTeam03$wip)
+meanInsentive03=mean(sewingTeam03$incentive)
+meanOvertime03=mean(sewingTeam03$over_time)
+
+#Team04
+mean04=mean(sewingTeam04$actual_productivity)
+var04 =var(sewingTeam04$actual_productivity)
+meanWorker04=mean(sewingTeam04$no_of_workers)
+meanTP04=mean(sewingTeam04$targeted_productivity)
+meanSMV04=mean(sewingTeam04$smv)
+meanWIP04=mean(sewingTeam04$wip)
+meanInsentive04=mean(sewingTeam04$incentive)
+meanOvertime04=mean(sewingTeam04$over_time)
+
+#Team05
+mean05=mean(sewingTeam05$actual_productivity)
+var05 =var(sewingTeam05$actual_productivity)
+meanWorker05=mean(sewingTeam05$no_of_workers)
+meanTP05=mean(sewingTeam05$targeted_productivity)
+meanSMV05=mean(sewingTeam05$smv)
+meanWIP05=mean(sewingTeam05$wip)
+meanInsentive05=mean(sewingTeam05$incentive)
+meanOvertime05=mean(sewingTeam05$over_time)
+
+#Team06
+mean06=mean(sewingTeam06$actual_productivity)
+var06 =var(sewingTeam06$actual_productivity)
+meanWorker06=mean(sewingTeam06$no_of_workers)
+meanTP06=mean(sewingTeam06$targeted_productivity)
+meanSMV06=mean(sewingTeam05$smv)
+meanWIP06=mean(sewingTeam06$wip)
+meanInsentive06=mean(sewingTeam06$incentive)
+meanOvertime06=mean(sewingTeam06$over_time)
+
+#Team07
+mean07=mean(sewingTeam07$actual_productivity)
+var07 =var(sewingTeam07$actual_productivity)
+meanWorker07=mean(sewingTeam07$no_of_workers)
+meanTP07=mean(sewingTeam07$targeted_productivity)
+meanSMV07=mean(sewingTeam07$smv)
+meanWIP07=mean(sewingTeam07$wip)
+meanInsentive07=mean(sewingTeam07$incentive)
+meanOvertime07=mean(sewingTeam07$over_time)
+
+#Team08
+mean08=mean(sewingTeam08$actual_productivity)
+var08 =var(sewingTeam08$actual_productivity)
+meanWorker08=mean(sewingTeam08$no_of_workers)
+meanTP08=mean(sewingTeam08$targeted_productivity)
+meanSMV08=mean(sewingTeam08$smv)
+meanWIP08=mean(sewingTeam08$wip)
+meanInsentive08=mean(sewingTeam08$incentive)
+meanOvertime08=mean(sewingTeam08$over_time)
+
+#Team09
+mean09=mean(sewingTeam09$actual_productivity)
+var09 =var(sewingTeam09$actual_productivity)
+meanWorker09=mean(sewingTeam09$no_of_workers)
+meanTP09=mean(sewingTeam09$targeted_productivity)
+meanSMV09=mean(sewingTeam09$smv)
+meanWIP09=mean(sewingTeam09$wip)
+meanInsentive09=mean(sewingTeam09$incentive)
+meanOvertime09=mean(sewingTeam09$over_time)
+
+#Team10
+mean10=mean(sewingTeam10$actual_productivity)
+var10 =var(sewingTeam10$actual_productivity)
+meanWorker10=mean(sewingTeam10$no_of_workers)
+meanTP10=mean(sewingTeam10$targeted_productivity)
+meanSMV10=mean(sewingTeam10$smv)
+meanWIP10=mean(sewingTeam10$wip)
+meanInsentive10=mean(sewingTeam10$incentive)
+meanOvertime10=mean(sewingTeam10$over_time)
+
+#Team11
+mean11=mean(sewingTeam11$actual_productivity)
+var11 =var(sewingTeam11$actual_productivity)
+meanWorker11=mean(sewingTeam11$no_of_workers)
+meanTP11=mean(sewingTeam11$targeted_productivity)
+meanSMV11=mean(sewingTeam11$smv)
+meanWIP11=mean(sewingTeam11$wip)
+meanInsentive11=mean(sewingTeam11$incentive)
+meanOvertime11=mean(sewingTeam11$over_time)
+
+#Team12
+mean12=mean(sewingTeam12$actual_productivity)
+var12 =var(sewingTeam12$actual_productivity)
+meanWorker12=mean(sewingTeam12$no_of_workers)
+meanTP12=mean(sewingTeam12$targeted_productivity)
+meanSMV12=mean(sewingTeam12$smv)
+meanWIP12=mean(sewingTeam12$wip)
+meanInsentive12=mean(sewingTeam12$incentive)
+meanOvertime12=mean(sewingTeam12$over_time)
+
+
+
+meanOfSewing <- c(mean01,mean02,mean03,mean04,mean05,mean06,mean07,mean08,mean09,mean10,mean11,mean12)
+meanofWorkers<-c(meanWorker01,meanWorker02,meanWorker03,meanWorker04,meanWorker05,meanWorker06,meanWorker07,meanWorker08,meanWorker09,meanWorker10,meanWorker11,meanWorker12)
+meanTP<-c(meanTP01,meanTP02,meanTP03,meanTP04,meanTP05,meanTP06,meanTP07,meanTP08,meanTP09,meanTP10,meanTP11,meanTP12)
+meanSMV<-c(meanSMV01,meanSMV02,meanSMV03,meanSMV04,meanSMV05,meanSMV06,meanSMV07,meanSMV08,meanSMV09,meanSMV10,meanSMV11,meanSMV12)
+meanWIP<-c(meanWIP01,meanWIP02,meanWIP03,meanWIP04,meanWIP05,meanWIP06,meanWIP07,meanWIP08,meanWIP09,meanWIP10,meanWIP11,meanWIP12)
+meanInsentive<-c(meanInsentive01,meanInsentive02,meanInsentive03,meanInsentive04,meanInsentive05,meanInsentive06,meanInsentive07,meanInsentive08,meanInsentive09,meanInsentive10,meanInsentive11,meanInsentive12)
+meanOvertime<-c(meanOvertime01, meanOvertime02,meanOvertime03,meanOvertime04,meanOvertime05,meanOvertime06,meanOvertime07,meanOvertime08,meanOvertime09,meanOvertime10,meanOvertime11,meanOvertime12)
+
+#investigate relationship between variables and  productivity
+plot(meanOfSewing)
+hist(meanOfSewing)
+plot(meanofWorkers,meanOfSewing,main="Mean productivity vs Mean Number of workers")
+plot(meanTP,meanOfSewing,main="Mean productivity vs Mean Target Productivity")
+plot(meanSMV,meanOfSewing,main="Mean productivity vs Mean SMV")
+plot(meanWIP,meanOfSewing,main="Mean productivity vs Mean WIP")
+plot(meanInsentive,meanOfSewing,main="Mean productivity vs Mean Incentive")
+plot(meanOvertime,meanOfSewing,main="Mean productivity vs Mean Overtime")
+
+# Explanation behind these plots,
+
+#The goal of these plots is to see why some teams perform better than others.
+#Is it because they have more people on their team, is it because they are getting paid more.
+# SO we took the mean of some of the variables by team and plotted them against the mean of each team's productivity
+# this showed us some relationships that revealed to us what variables on agerage effected the productivity of sewing and 
+#which variables didn't. 
+
+
+
+
+
+
+#box plot of productivity by team
+par(mfrow = c(3, 4))
+boxplot(sewingTeam01$actual_productivity,main="Productivity Index",xlab="Sewing Team01")
+boxplot(sewingTeam02$actual_productivity,main="Productivity Index",xlab="Sewing Team02")
+boxplot(sewingTeam03$actual_productivity,main="Productivity Index",xlab="Sewing Team03")
+boxplot(sewingTeam04$actual_productivity,main="Productivity Index",xlab="Sewing Team04")
+boxplot(sewingTeam05$actual_productivity,main="Productivity Index",xlab="Sewing Team05")
+boxplot(sewingTeam06$actual_productivity,main="Productivity Index",xlab="Sewing Team06")
+boxplot(sewingTeam07$actual_productivity,main="Productivity Index",xlab="Sewing Team07")
+boxplot(sewingTeam08$actual_productivity,main="Productivity Index",xlab="Sewing Team08")
+boxplot(sewingTeam09$actual_productivity,main="Productivity Index",xlab="Sewing Team09")
+boxplot(sewingTeam10$actual_productivity,main="Productivity Index",xlab="Sewing Team10")
+boxplot(sewingTeam11$actual_productivity,main="Productivity Index",xlab="Sewing Team11")
+boxplot(sewingTeam12$actual_productivity,main="Productivity Index",xlab="Sewing Team12")
+
