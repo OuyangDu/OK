@@ -173,7 +173,7 @@ hist(sewingTeam10$actual_productivity)
 hist(sewingTeam11$actual_productivity)
 hist(sewingTeam12$actual_productivity)
 
-# Calculating the mean of each team variable
+## Calculating the mean of each team variable
 # Team01
 mean01=mean(sewingTeam01$actual_productivity)
 var01 =var(sewingTeam01$actual_productivity)
