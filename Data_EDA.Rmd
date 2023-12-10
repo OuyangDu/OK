@@ -1240,9 +1240,9 @@ summary(testfit)
 
 
 ```{r}
-outliers_to_exclude<- c("	
-2015-02-25","2015-02-24","2015-01-18")
-sewingTeam01_outlierrmv <- sewingTeam01[!sewingTeam01$date %in% outliers_to_exclude, ]
+# outliers_to_exclude<- c("	
+# 2015-02-25","2015-02-24","2015-01-18")
+# sewingTeam01_outlierrmv <- sewingTeam01[!sewingTeam01$date %in% outliers_to_exclude, ]
 ```
 
 
@@ -1257,9 +1257,9 @@ We first fix the training set and the test set to be 80% and 20% of the dataset.
 
 ```{r}
 set.seed(123)
-sample_indices <- sample(nrow(sewingTeam01), size = 0.8 * nrow(sewingTeam01))
-train.data <- sewingTeam01[sample_indices, ]
-test.data <- sewingTeam01[-sample_indices, ]
+sample_indices <- sample(nrow(sewingTeam01_outlierrmv), size = 0.8 * nrow(sewingTeam01_outlierrmv))
+train.data <- sewingTeam01_outlierrmv[sample_indices, ]
+test.data <- sewingTeam01_outlierrmv[-sample_indices, ]
 ```
 
 
@@ -1653,5 +1653,137 @@ results_table_kfold <- data.frame(
 )
 print(results_table_kfold)
 ```
+
+We preferred the LOOCV method for validation and LASSO model since it contains less variables. 
+
+## Time Series Approach - ARIMAX Model and LOOCV 
+
+For the methods implemented above, we assumed all the variables are not temporally correlated. We further assumed that all the data points were collected randomly. In this section, we will drop the assumptions and perform LOOCV by time order. We would love to see whether releasing such assumptions can provide us with better prediction.
+
+#### Training Set and Test Set Seperation
+
+Unlike the previous section where we shuffled all the data and randomly selected 80% as our training set. Now we selected the last 20 percentile - the 20% most recent data - as our test set and use the first 80% as our training set.
+
+```{r}
+n_80_percent <- round(0.8 * nrow(sewingTeam01))
+
+# Select the first 80% of the data by order
+#selected_data <- head(sewingTeam01, n = n_80_percent)
+
+# Display the selected data
+
+train.data.time <- sewingTeam01[c(1:n_80_percent), ]
+test.data.time <- sewingTeam01[c((n_80_percent+1):nrow(sewingTeam01)), ]
+```
+
+Okay I don't think this works based on one step ahead. We could modify the h to be bigger, but this might be too risky....
+
+#### ACF/PACF Plots
+
+
+```{r}
+par(mfrow = c(1, 2))
+acf(train.data.time$actual_productivity)
+pacf(train.data.time$actual_productivity)
+```
+
+
+```{r,warning=FALSE}
+# library(forecast)
+# 
+# n_min <- 5
+# n <- nrow(sewingTeam01_outlierrmv)
+# ae = forecasts = actual_val = rep(NA, n - n_min)
+# 
+# # Loop through time series
+# for (i in 1:(n - n_min)) {
+#   # Fit the model to the training set with external regressors
+#   curr_model <- auto.arima(
+#     sewingTeam01_outlierrmv$actual_productivity[1:(i + n_min - 1)],
+#     xreg = as.matrix(sewingTeam01_outlierrmv[1:(i + n_min - 1), c("targeted_productivity", "smv", "wip", "over_time", "incentive", "idle_time", "idle_men", "no_of_style_change", "no_of_workers")],)
+#   )
+# 
+#   # Create 1 step ahead forecasts with external regressors
+#   forecasts[i] <- forecast(curr_model, h = 1, 
+#                             xreg = as.matrix(sewingTeam01_outlierrmv[i + n_min, c("targeted_productivity", "smv", "wip", "over_time", "incentive", "idle_time", "idle_men", "no_of_style_change", "no_of_workers")]))$mean
+# 
+#   actual_val[i] = sewingTeam01_outlierrmv$actual_productivity[i + n_min]
+# 
+#   # Get mean absolute error
+#   ae[i] = abs(forecasts[i] - actual_val[i])
+
+
+```
+
+
+
+```{r}
+ library(forecast)
+n_min = 5 # minimum length for model
+n = nrow(sewingTeam01_outlierrmv)
+ae = forecasts = actual_val = rep(NA, n - n_min)
+# Loop through time series
+for(i in 1:(n-n_min)) {
+# Fit to the training set
+curr_model = auto.arima(sewingTeam01_outlierrmv$actual_productivity[1:(i + n_min - 1)], ic = "bic")
+#curr_model = Arima(sewingTeam01_outlierrmv$actual_productivity[1:(i + n_min - 1)], c(1, 1, 1))
+
+# Create 1 step ahead forecasts
+forecasts[i] = forecast(curr_model, h = 1)[['mean']]
+actual_val[i] = sewingTeam01_outlierrmv$actual_productivity[i + n_min]
+# Get mean absolute error
+ae[i] = abs(forecasts[i] - actual_val[i])
+}
+```
+
+```{r}
+# # Assuming you want to check columns for finite values
+# columns_to_check <- c("targeted_productivity", "smv", "wip", "over_time", "incentive", "idle_time", "idle_men", "no_of_style_change", "no_of_workers")
+# 
+# # Check for finite values in each column
+# finite_check <- sapply(sewingTeam01_outlierrmv[, columns_to_check], is.finite)
+# 
+# # Check if any column has non-finite values
+# if (any(!finite_check)) {
+#   print("There are non-finite values in the specified columns.")
+# } else {
+#   print("All values in the specified columns are finite.")
+# }
+
+```
+
+
+```{r}
+rmse_time = rmse(actual_val,forecasts)
+mae_time = mae(actual_val,forecasts)
+print(rmse_time)
+print(mae_time)
+```
+
+```{r}
+r_squared_time = rsquared(actual_val,forecasts)
+#lasso_r_squared_kfold = rsquared(test.data$actual_productivity,lasso_predictions_kfold)
+```
+
+
+
+```{r}
+results_table_time <- data.frame(
+  Model = c("ARIMAX"),
+  RMSE = c(rmse_time),
+  MAE = c(mae_time),
+  R_squared = c(r_squared_time)
+)
+print(results_table_time)
+```
+### Plotting the Forcasts
+
+```{r}
+# plot(sewingTeam01_outlierrmv$actual_productivity, type = 'l')
+# lines(31:n, forecasts, col = 'red')
+```
+
+
+
 
 
