@@ -1,0 +1,432 @@
+---
+title: "linear model and lasso results for all 12 sewing teams"
+author: "Team OK: Kara Wei, Ouyang Du"
+date: "2023-12-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(ggcorrplot)
+library(tidyr)
+library(reshape)
+library(ggfortify)
+library(FSA)
+```
+Load in all the data
+
+```{r}
+#data <- read.csv("/Users/karawei/Desktop/GRAD 3rd/ESE 527/garments_worker_productivity.csv")
+data <- read.csv("C:/Users/ThinkPad/Documents/GitHub/OK/worker_productivity.csv")
+
+
+#data_org <- read.csv("/Users/karawei/Desktop/GRAD 3rd/ESE 527/garments_worker_productivity.csv")
+data_org <- read.csv("C:/Users/ThinkPad/Documents/GitHub/OK/worker_productivity.csv")
+
+data$department = replace(data$department, data$department=="sweing", "sewing")
+data_org$department = replace(data_org$department, data_org$department=="finishing ", "finishing")
+data_org$department = replace(data_org$department, data_org$department=="sweing", "sewing")
+for (j in 1:length(data$department)){
+  if(data$department[j]=="sewing"){data$department[j]<-1}
+  else if(data$department[j]=="finishing "){data$department[j]<-2}
+  else if(data$department[j]=="finishing"){data$department[j]<-2}
+}
+
+# change day of the week to number  Monday=1, Sunday=7
+for (i in 1:length(data$day)){
+  if(data$day[i]=="Monday"){data$day[i]<-as.integer(1)}
+  else if(data$day[i]=="Tuesday"){data$day[i]<-as.integer(2)}
+  else if(data$day[i]=="Wednesday"){data$day[i]<-as.integer(3)}
+  else if(data$day[i]=="Thursday"){data$day[i]<-as.integer(4)}
+  else if(data$day[i]=="Friday"){data$day[i]<-as.integer(5)}
+  else if(data$day[i]=="Saturday"){data$day[i]<-as.integer(6)}
+  else if(data$day[i]=="Sunday"){data$day[i]<-as.integer(7)}
+}
+
+# changing the date to date format
+data$date <- as.Date(data$date,format="%m/%d/%Y" )
+
+#Changing Quarter to numbers
+for (k in 1:length(data$quarter)){
+  if(data$quarter[k]=="Quarter1"){data$quarter[k]<-as.integer(1)}
+  else if(data$quarter[k]=="Quarter2"){data$quarter[k]<-as.integer(2)}
+  else if(data$quarter[k]=="Quarter3"){data$quarter[k]<-as.integer(3)}
+  else if(data$quarter[k]=="Quarter4"){data$quarter[k]<-as.integer(4)}
+  else if(data$quarter[k]=="Quarter5"){data$quarter[k]<-as.integer(5)}
+}
+
+sewing<-subset(data,data$department==1)
+finishing<-subset(data,data$department==2)
+sewingTeam01<-subset(sewing,sewing$team==1)
+sewingTeam02<-subset(sewing,sewing$team==2)
+sewingTeam03<-subset(sewing,sewing$team==3)
+sewingTeam04<-subset(sewing,sewing$team==4)
+sewingTeam05<-subset(sewing,sewing$team==5)
+sewingTeam06<-subset(sewing,sewing$team==6)
+sewingTeam07<-subset(sewing,sewing$team==7)
+sewingTeam08<-subset(sewing,sewing$team==8)
+sewingTeam09<-subset(sewing,sewing$team==9)
+sewingTeam10<-subset(sewing,sewing$team==10)
+sewingTeam11<-subset(sewing,sewing$team==11)
+sewingTeam12<-subset(sewing,sewing$team==12)
+sewingTeams_list<-list(sewingTeam01,sewingTeam02,sewingTeam03,sewingTeam04,sewingTeam05,sewingTeam06,sewingTeam07,sewingTeam08,sewingTeam09,sewingTeam10,sewingTeam11,sewingTeam12)
+
+finishingTeam01<-subset(finishing,finishing$team==1)
+finishingTeam02<-subset(finishing,finishing$team==2)
+finishingTeam03<-subset(finishing,finishing$team==3)
+finishingTeam04<-subset(finishing,finishing$team==4)
+finishingTeam05<-subset(finishing,finishing$team==5)
+finishingTeam06<-subset(finishing,finishing$team==6)
+finishingTeam07<-subset(finishing,finishing$team==7)
+finishingTeam08<-subset(finishing,finishing$team==8)
+finishingTeam09<-subset(finishing,finishing$team==9)
+finishingTeam10<-subset(finishing,finishing$team==10)
+finishingTeam11<-subset(finishing,finishing$team==11)
+finishingTeam12<-subset(finishing,finishing$team==12)
+```
+
+```{r}
+#finishing_file_path <- "/Users/karawei/Documents/GitHub/OK/combinedProductivityDataforFinishingTeams.csv"
+#sewing_file_path <- "/Users/karawei/Documents/GitHub/OK/combinedDataforProductivity.csv"
+finishing_file_path <-"C:/Users/ThinkPad/Documents/GitHub/OK/combinedProductivityDataforFinishingTeams.csv"
+sewing_file_path <-"C:/Users/ThinkPad/Documents/GitHub/OK/combinedDataforProductivity.csv"
+
+# Read the CSV file into a data frame
+finishing_data <- read.csv(finishing_file_path)
+sewing_data <- read.csv(sewing_file_path)
+```
+## PCA for outlier detection
+```{r}
+library(stats)
+#sewing_std <- scale(sewingTeam01[,c(6:11,14)])
+threshold <- 20
+
+# list of variable that are lists, each index corresponds to a sewing team
+outlier_dates <- vector("list", length = 12)
+sewing_pca <- vector("list", length = 12)
+mahalanobis_dist <- vector("list", length = 12)
+Team_outlier <- vector("list", length = 12)
+Team_data_outlierrmv<- vector("list", length = 12)
+mahalanobis_dist_cutoff <- vector("list", length = 12)
+sample_indices <- vector("list", length = 12) # for splitting up test and training set
+train_list<- vector("list", length = 12)
+test_list<- vector("list", length = 12)
+
+
+selected_columns <- c(6:10, 13:14)
+for(i in 1:12){
+  
+outlier_dates[[i]] <- as.Date(character(0), format = "%Y-%m-%d")
+
+ # Check for constant/zero variance columns
+non_zero_var_cols <- apply(sewingTeams_list[[i]][, selected_columns], 2, function(x) var(x) > 0)
+ # Perform PCA only on non-constant/zero variance columns
+  if (any(non_zero_var_cols)) {
+    sewing_pca[[i]] <- prcomp(sewingTeams_list[[i]][, selected_columns][, non_zero_var_cols], center = TRUE, scale. = TRUE)
+  } else {
+# Handle the case where all columns have constant/zero variance
+    warning(paste("Skipping PCA for data set", i, "due to constant/zero variance columns."))
+    sewing_pca[[i]] <- NULL
+  }
+
+mahalanobis_dist[[i]] <- mahalanobis(sewing_pca[[i]]$x, colMeans(sewing_pca[[i]]$x), cov(sewing_pca[[i]]$x))
+sewingTeams_list[[i]] <- cbind(sewingTeams_list[[i]],mahalanobis_dist[[i]])
+}
+
+```
+```{r}
+
+for(i in 1:12){
+sorted_distance <- sort(mahalanobis_dist[[i]],decreasing = TRUE)
+mahalanobis_dist_cutoff[i] <- sorted_distance[5]
+}
+```
+find detected outlier for all 12 teams
+```{r}
+outlier_function <- function(threshold,dataset){
+  outlier_dates <- as.Date(character(0), format = "%Y-%m-%d")
+  for (i in 1:nrow(dataset)) {
+  if (dataset$mahalanobis_dist[i] > threshold) {
+        outlier_dates <- c(outlier_dates, as.Date(dataset$date[i], format = "%Y-%m-%d"))
+  }
+  }
+  return(outlier_dates)
+}
+```
+
+
+remove outlier for all 12 teams
+```{r}
+
+for(i in 1:12){
+  Team_outlier[[i]] <- outlier_function(mahalanobis_dist_cutoff[i],sewingTeams_list[[i]])
+  Team_data_outlierrmv[[i]] <- sewingTeams_list[[i]][!sewingTeams_list[[i]]$date %in% sewingTeam01_outlier, ]
+}
+
+```
+
+### Seperating training set and test set
+
+```{r}
+set.seed(123)
+for(i in 1:12){
+  sample_indices[[i]] <- sample(nrow(sewingTeams_list[[i]]), size = 0.8 * nrow(sewingTeams_list[[i]]))
+  train_list[[i]] <- sewingTeams_list[[i]][sample_indices[[i]], ]
+  test_list[[i]] <- sewingTeams_list[[i]][-sample_indices[[i]], ]
+}
+
+```
+
+
+## Linear Model with BIC
+
+
+```{r}
+for(i in 1:12)
+{
+ln.fit = lm(actual_productivity ~ targeted_productivity+smv+wip+over_time+incentive+idle_time+idle_men+no_of_style_change+no_of_workers, data=train_list[[i]])
+print(paste("sewing team",as.character(i)))
+print(summary(ln.fit))
+}
+```
+
+```{r}
+
+library("leaps")
+library(gridExtra)
+
+for(i in 1:12){
+
+if(max(train_list[[i]]$idle_time)==0 & max(train_list[[i]]$idle_men)==0 ){
+  prod.gsub <- regsubsets(actual_productivity ~ 
+  targeted_productivity+smv+wip+over_time+incentive+no_of_style_change+no_of_workers,
+  data=train_list[[i]], nbest=4, nvmax=9)
+}
+  else {
+    prod.gsub <- regsubsets(actual_productivity ~ targeted_productivity+smv+wip+over_time+incentive+idle_time+idle_men+no_of_style_change+no_of_workers, data=train_list[[i]], nbest=4, nvmax=9)
+  }
+ 
+stats <- summary(prod.gsub)
+gsub.df <- data.frame(Model.Number=1:length(stats$adjr2), Adjusted.R2=stats$adjr2, BIC=stats$bic)
+p1 <- ggplot(gsub.df, aes(x=Model.Number, y=Adjusted.R2)) + 
+  geom_line() + 
+  geom_point(color="red", size=2) + 
+  theme_minimal() +
+  ylab("Adjusted R-squared") + xlab("Model Number")
+p2 <- ggplot(gsub.df, aes(x=Model.Number, y=BIC)) + 
+  geom_line() + 
+  geom_point(color="red", size=2) + 
+  theme_minimal() +
+  ylab("BIC") + xlab("Model Number")
+grid.arrange(p1,p2, nrow=2)
+print(paste("sewing team",as.character(i)))
+print(coef(prod.gsub, which.max(gsub.df$Adjusted.R2)))
+print(max(gsub.df$Adjusted.R2))
+print("____________________________")
+print(coef(prod.gsub, which.min(gsub.df$BIC)))
+print(gsub.df$Adjusted.R2[which.min(gsub.df$BIC)])
+print("=============================")
+}
+
+```
+
+
+```{r, WARNING = FALSE}
+library(glmnet)
+library(caret)
+
+set.seed(123)  # for reproducibility
+
+linear_model_list<- vector("list", length = 12)
+lasso_model_list<- vector("list", length = 12)
+
+# Define the formula
+formula <- as.formula("actual_productivity ~ targeted_productivity + smv + wip + over_time + incentive + idle_time + idle_men + no_of_style_change + no_of_workers")
+
+train.control <- trainControl(method = "LOOCV",savePredictions = TRUE) # 5-fold cross-validation
+
+#Define the hyperparameter values for lasso
+
+best_lambda <- c(0.01, 0.02, 0.04, 0.06, 0.1, 0.5, 0.8, 1)
+
+# Create a model specification for Linear regression
+for(i in 1:12){
+  
+  linear_model_list[[i]] <- train(formula, 
+                       data = train_list[[i]], 
+                       method = "lm",
+                       trControl = train.control)
+
+# Create a model specification for Lasso regression
+lasso_model_list[[i]] <- train(
+  formula,
+  data = sewingTeams_list[[i]] ,
+  method = "glmnet",
+  trControl = train.control,  
+  tuneGrid = expand.grid(alpha = 1, lambda = best_lambda )  # Regularization path
+  # alpha = 1,                                    
+ # lambda =  
+)
+
+# Display the results
+print(paste("sewing team",as.character(i)))
+print(linear_model_list[[i]])
+print(lasso_model_list[[i]])
+  
+}
+
+
+```
+
+```{r}
+
+for(i in 1:12){
+# Extract coefficients for the linear model
+linear_model_summary <- summary(linear_model_list[[i]]$finalModel)
+
+# Extract coefficients for the lasso model
+
+lasso_model_coefficients <- coef(lasso_model_list[[i]]$finalModel, s = lasso_model_list[[i]]$bestTune$lambda)  # Use one of the lambda values
+print(paste("sewing team",as.character(i)))
+# Display coefficients
+cat("Linear Model Coefficients:\n")
+print(linear_model_summary)
+
+cat("\nLasso Model Coefficients:\n")
+print(lasso_model_coefficients)
+print(paste("best lamda: ",as.character(lasso_model_list[[i]]$bestTune$lambda)))
+print("=============================")
+}
+```
+##### training with leave one out Cross validation
+
+```{r}
+#Create functions to test for rmse and mac
+rmse <- function(actual, predicted) {
+  sqrt(mean((actual - predicted)^2))
+}
+
+mae <- function(actual, predicted) {
+  mean(abs(actual - predicted))
+}
+
+rsquared <- function(actual,predicted){
+  cor(actual, predicted)^2
+}
+```
+
+
+
+
+```{r}
+training_data_frame_list<- vector("list", length = 12)
+test_data_frame_list<- vector("list", length = 12)
+
+for (i in 1:12){
+  training_data_frame_list[[i]] <- as.data.frame(train_list[[i]])
+  test_data_frame_list[[i]] <- as.data.frame(test_list[[i]])
+}
+
+```
+
+
+
+```{r, WARNING = FALSE}
+
+library(glmnet)
+library(caret)
+
+set.seed(123)  # for reproducibility
+
+
+# Define the formula
+formula <- as.formula("actual_productivity ~ targeted_productivity + smv + wip + over_time + incentive +  no_of_style_change + no_of_workers")
+
+train.control <- trainControl(method = "LOOCV",savePredictions = TRUE) # 5-fold cross-validation
+#Define the hyperparameter values for lasso
+
+best_lambda <- c(0.01, 0.02, 0.04, 0.06, 0.1, 0.5, 0.8, 1)
+
+linear_model_kfold_list<- vector("list", length = 12)
+lasso_model_kfold_list<- vector("list", length = 12)
+for(i in 1:12){
+result <- suppressWarnings({
+
+# Create a model specification for Linear regression
+
+linear_model_kfold_list[[i]] <- train(formula, 
+                       data = training_data_frame_list[[i]], 
+                       method = "lm",
+                       trControl = train.control)
+
+# Create a model specification for Lasso regression
+lasso_model_kfold_list[[i]] <- train(
+  formula,
+  data = training_data_frame_list[[i]],
+  method = "glmnet",
+  trControl = train.control,  
+  tuneGrid = expand.grid(alpha = 1, lambda = best_lambda )  # Regularization path
+  # alpha = 1,                                    
+ # lambda =  
+)
+
+# Display the results
+print(paste("sewing team",as.character(i)))
+print("linear model result")
+print(linear_model_kfold_list[[i]])
+print("-------------------------------------------------------------------------------")
+print("lasso model result")
+print(lasso_model_kfold_list[[i]])
+})
+
+# No warnings will be printed here
+print(result)
+print("================================================================================")
+}
+```
+
+#### Model Validation
+
+```{r}
+linear_predictions_kfold_list <- vector("list", length = 12)
+lasso_predictions_kfold_list <- vector("list", length = 12)
+for(i in 1:12){
+linear_predictions_kfold_list[[i]] <- predict(linear_model_kfold_list[[i]]$finalModel,newdata = test_data_frame_list[[i]][c(6:10,13:14)])
+lasso_predictions_kfold_list[[i]] <- predict(lasso_model_kfold_list[[i]]$finalModel, s = lasso_model_kfold_list[[i]]$bestTune$lambda,newx = as.matrix(test_data_frame_list[[i]][c(6:10,13:14)]))
+
+
+}
+```
+```{r}
+rmse_linear_kfold_list <- vector("list", length = 12)
+mae_linear_kfold_list <- vector("list", length = 12)
+rmse_lasso_kfold_list <- vector("list", length = 12)
+mae_lasso_kfold_list <- vector("list", length = 12)
+linear_r_squared_kfold_list<- vector("list", length = 12)
+lasso_r_squared_kfold_list<- vector("list", length = 12)
+for(i in 1:12){
+rmse_linear_kfold_list[[i]] = rmse(test_list[[i]]$actual_productivity,linear_predictions_kfold_list[[i]])
+mae_linear_kfold_list[[i]] = mae(test_list[[i]]$actual_productivity,linear_predictions_kfold_list[[i]])
+
+rmse_lasso_kfold_list[[i]] = rmse(test_list[[i]]$actual_productivity,lasso_predictions_kfold_list[[i]])
+mae_lasso_kfold_list[[i]] = mae(test_list[[i]]$actual_productivity,lasso_predictions_kfold_list[[i]])
+
+linear_r_squared_kfold_list[[i]] = rsquared(test_list[[i]]$actual_productivity,linear_predictions_kfold_list[[i]])
+lasso_r_squared_kfold_list[[i]] = rsquared(test_list[[i]]$actual_productivity,lasso_predictions_kfold_list[[i]])
+}                                
+```
+
+```{r}
+results_table_kfold<- vector("list", length = 12)
+for(i in 1:12){
+ 
+
+  results_table_kfold[[i]] <- data.frame(
+  Model = c("Linear", "Lasso"),
+  RMSE = c(rmse_linear_kfold_list[[i]],rmse_lasso_kfold_list[[i]]),
+  MAE = c(mae_linear_kfold_list[[i]], mae_lasso_kfold_list[[i]]),
+  R_squared = c(linear_r_squared_kfold_list[[i]], lasso_r_squared_kfold_list[[i]])
+)
+print(results_table_kfold[[i]])
+}
+```
