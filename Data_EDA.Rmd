@@ -1581,12 +1581,12 @@ print(result)
 
 
 
-```{r,include=FALSE}
+```{r}
 # # Extract coefficients for the linear model
-# linear_model_summary <- summary(linear_model$finalModel)
+linear_model_summary <- summary(linear_model_kfold$finalModel)
 # 
 # # Extract coefficients for the lasso model
-# lasso_model_coefficients <- coef(lasso_model$finalModel, s = lasso_model$bestTune$lambda)  # Use one of the lambda values
+lasso_model_coefficients <- coef(lasso_model$finalModel, s = lasso_model$bestTune$lambda)  # Use one of the lambda values
 # 
 # # Display coefficients
 # cat("Linear Model Coefficients:\n")
@@ -1594,6 +1594,8 @@ print(result)
 # 
 # cat("\nLasso Model Coefficients:\n")
 # print(lasso_model_coefficients)
+print(linear_model_summary)
+lasso_model_coefficients
 ```
 
 
@@ -1645,13 +1647,13 @@ lasso_r_squared_kfold = rsquared(test.data$actual_productivity,lasso_predictions
 
 
 ```{r}
-results_table_kfold <- data.frame(
-  Model = c("Linear", "Lasso"),
-  RMSE = c(rmse_linear_kfold,rmse_lasso_kfold),
-  MAE = c(mae_linear_kfold, mae_lasso_kfold),
-  R_squared = c(linear_r_squared_kfold, lasso_r_squared_kfold)
-)
-print(results_table_kfold)
+# results_table_kfold <- data.frame(
+#   Model = c("Linear", "Lasso"),
+#   RMSE = c(rmse_linear_kfold,rmse_lasso_kfold),
+#   MAE = c(mae_linear_kfold, mae_lasso_kfold),
+#   R_squared = c(linear_r_squared_kfold, lasso_r_squared_kfold)
+# )
+# print(results_table_kfold)
 ```
 
 We preferred the LOOCV method for validation and LASSO model since it contains less variables. 
@@ -1718,18 +1720,18 @@ pacf(train.data.time$actual_productivity)
 
 
 ```{r}
- library(forecast)
+library(forecast)
 n_min = 5 # minimum length for model
 n = nrow(sewingTeam01_outlierrmv)
 ae = forecasts = actual_val = rep(NA, n - n_min)
 # Loop through time series
 for(i in 1:(n-n_min)) {
 # Fit to the training set
-curr_model = auto.arima(sewingTeam01_outlierrmv$actual_productivity[1:(i + n_min - 1)], ic = "bic")
+curr_model = auto.arima(sewingTeam01_outlierrmv$actual_productivity[1:(i + n_min - 1)], ic = "bic",xreg = as.matrix(sewingTeam01_outlierrmv[1:(i + n_min - 1), c("incentive")],))
 #curr_model = Arima(sewingTeam01_outlierrmv$actual_productivity[1:(i + n_min - 1)], c(1, 1, 1))
 
 # Create 1 step ahead forecasts
-forecasts[i] = forecast(curr_model, h = 1)[['mean']]
+forecasts[i] = forecast(curr_model, h = 1,xreg = as.matrix(sewingTeam01_outlierrmv[1:(i + n_min - 1), c("incentive")],))[['mean']]
 actual_val[i] = sewingTeam01_outlierrmv$actual_productivity[i + n_min]
 # Get mean absolute error
 ae[i] = abs(forecasts[i] - actual_val[i])
@@ -1769,10 +1771,10 @@ r_squared_time = rsquared(actual_val,forecasts)
 
 ```{r}
 results_table_time <- data.frame(
-  Model = c("ARIMAX"),
-  RMSE = c(rmse_time),
-  MAE = c(mae_time),
-  R_squared = c(r_squared_time)
+  Model = c("Linear", "Lasso","ARIMAX"),
+  RMSE = c(rmse_linear_kfold,rmse_lasso_kfold,rmse_time),
+  MAE = c(mae_linear_kfold, mae_lasso_kfold,mae_time),
+  R_squared = c(linear_r_squared_kfold, lasso_r_squared_kfold,r_squared_time)
 )
 print(results_table_time)
 ```
